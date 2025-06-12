@@ -1,3 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: db/changelog/changeset/post_V001__initial.sql

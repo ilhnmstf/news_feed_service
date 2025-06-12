@@ -1,44 +1,23 @@
 spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5555/postgres
-    username: user
-    password: password
-
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-
   data:
     redis:
       port: 6380
       host: localhost
       ttl: 7d
-      thread-pool-sizes:
-        post:
-          saveAll: 5
-          comment: 5
-          like: 5
-        user:
-          save: 5
 
   profiles:
     active: prod
 
 server:
-  port: 9005
+  port: 9010
 
 user-service:
   host: localhost
   port: 9000
+
+event-service:
+  host: localhost
+  port: 9005
 
 springdoc:
   swagger-ui:
