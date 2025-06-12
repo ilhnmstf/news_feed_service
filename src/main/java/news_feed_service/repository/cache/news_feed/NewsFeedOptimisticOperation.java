@@ -3,18 +3,26 @@ package news_feed_service.repository.cache.news_feed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class NewsFeedOptimisticOperation {//todo add retry
+public class NewsFeedOptimisticOperation {
 
     private final RedisTemplate<String, Long> newsFeedRedisTemplate;
 
+    @Retryable(
+            retryFor = {OptimisticLockingFailureException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(value = 500, multiplier = 2)
+    )
     public Boolean addOptimistic(String key, Runnable doing) {
         log.debug("Try to update value with key {}", key);
         return newsFeedRedisTemplate.execute(new SessionCallback<>() {

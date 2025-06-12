@@ -32,3 +32,6 @@ springdoc:
 news-feed:
   count-in-cache: 500
   count: 10
+
+thread-pool-size:
+  event-save: 10

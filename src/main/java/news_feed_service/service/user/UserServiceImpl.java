@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Long> getFollowee(long userId) {
         List<Long> followeeIds = get(userId).getFolloweeIds();
-        if (followeeIds == null || followeeIds.isEmpty()) { // todo go to user service
+        if (followeeIds == null || followeeIds.isEmpty()) {
             throw new RuntimeException("User with id " + userId + " has not followee");
         }
         return followeeIds;

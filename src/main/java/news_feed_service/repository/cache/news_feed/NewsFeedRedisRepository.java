@@ -12,26 +12,31 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 @Repository
 public class NewsFeedRedisRepository  implements NewsFeedCacheRepository {
     private final NewsFeedOptimisticOperation newsFeedOptimisticOperation;
     private final RedisTemplate<String, Long> newsFeedRedisTemplate;
     private final ZSetOperations<String, Long> newsFeedZSetOperation;
+    private final ExecutorService saveEventPool;
     private final String key;
 
     public NewsFeedRedisRepository(
             NewsFeedOptimisticOperation newsFeedOptimisticOperation,
-            RedisTemplate<String, Long> newsFeedRedisTemplate) {
+            RedisTemplate<String, Long> newsFeedRedisTemplate,
+            ExecutorService saveEventPool) {
         this.newsFeedRedisTemplate = newsFeedRedisTemplate;
         this.newsFeedOptimisticOperation = newsFeedOptimisticOperation;
         this.newsFeedZSetOperation = newsFeedRedisTemplate.opsForZSet();
+        this.saveEventPool = saveEventPool;
         this.key = "feed:";
     }
 
     public void saveOptimistic(long userId, EventDto event) {
         CompletableFuture.runAsync(() ->
-                newsFeedOptimisticOperation.addOptimistic(key + userId, () -> save(userId, event))); // todo add pool
+                newsFeedOptimisticOperation
+                        .addOptimistic(key + userId, () -> save(userId, event)), saveEventPool);
     }
 
     @Override
